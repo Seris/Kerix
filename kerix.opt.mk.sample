@@ -1,0 +1,7 @@
+ARCH   := $(shell uname -m)
+CC     := i686-elf-gcc-4.9.1
+CFLAGS := -O2 -fomit-frame-pointer -std=gnu99 -ffreestanding -Wall -Wmissing-prototypes -Wextra -Wstrict-prototypes
+
+OUTPUT := kerix-${VERSION}-${SUBVERSION}-${PATCHLEVEL}
+
+export ARCH GCC CFLAGS OUTPUT
