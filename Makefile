@@ -47,8 +47,8 @@ export archtree
 
 # Build and link Kerix
 all:
-  @ ${SHELL} build.sh
+	@ ${SHELL} build.sh
 
 # Clean target
 clean_tree:
-  $(RM) -rf ${virtualtree}
+	$(RM) -rf ${virtualtree}
