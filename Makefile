@@ -16,10 +16,10 @@ ECHO    := echo
 EXIT    := exit
 FIND    := find
 GREP    := grep
-SED			:= sed
-CAT 		:= cat
+SED     := sed
+CAT     := cat
 LD      := ld
-LN 			:= ln
+LN      := ln
 LS      := ls
 RM      := rm
 export MAKEFLAGS SHELL PRINTF MKDIR MAKE ECHO EXIT FIND GREP SED CAT LD LN LS RM
@@ -31,9 +31,9 @@ export LC_COLLATE LC_NUMERIC
 
 
 # Kerix tree
-root   		  := $(CURDIR)
-srctree  		:= src
-tmpdir   		:= /tmp/kerix-build
+root        := $(CURDIR)
+srctree     := src
+tmpdir      := /tmp/kerix-build
 virtualtree := ${tmpdir}/virtualtree
 includes    := ${tmpdir}/virtualtree/includes
 export root srctree virtualtree includes
@@ -47,8 +47,8 @@ export archtree
 
 # Build and link Kerix
 all:
-	@ ${SHELL} build.sh
+  @ ${SHELL} build.sh
 
 # Clean target
 clean_tree:
-	$(RM) -rf ${virtualtree}
+  $(RM) -rf ${virtualtree}
