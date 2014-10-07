@@ -1,7 +1,13 @@
-ARCH   := $(shell uname -m)
-CC     := i686-elf-gcc-4.9.1
-CFLAGS := -O2 -fomit-frame-pointer -std=gnu99 -ffreestanding -Wall -Wmissing-prototypes -Wextra -Wstrict-prototypes
+ARCH    := $(shell uname -m)
+CC      := gcc
+CFLAGS  := Wall -Wmissing-prototypes -Wextra -Wstrict-prototypes
+AS      := as
+ASFLAGS := 
+AR      := ar
+LDFLAGS := 
 
-OUTPUT := kerix-${VERSION}-${SUBVERSION}-${PATCHLEVEL}
+INIT_OBJ_NAME := export-init.o
 
-export ARCH GCC CFLAGS OUTPUT
+OUTPUT := ${root}/kerix-${VERSION}-${SUBVERSION}-${PATCHLEVEL}
+
+export ARCH CC AS ASFLAGS AR CFLAGS LDFLAGS OUTPUT INIT_OBJ_NAME
