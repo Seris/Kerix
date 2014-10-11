@@ -1,3 +1,10 @@
 # Ignore compilation stuff
-kerix-*-*-*
-kerix.opt.mk
+kerix-*.*.*
+*.o
+*.a
+
+# Configuration file
+kerix.config
+
+# Debug file
+kerix.debug

@@ -26,7 +26,13 @@
   _start:
     movl $stack_top, %esp
     cli
+
+    # Architecture dependent function
+    call init_kernel
+
+    # Common function
     call start_kernel
+
     hlt
 
 .hang_up:
