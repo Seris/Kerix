@@ -11,26 +11,19 @@ LC_COLLATE := C
 LC_NUMERIC := C
 export LC_COLLATE LC_NUMERIC
 
-
 MAKEFLAGS += --no-print-directory
 
 # Flags
-CFLAGS:=$(CFLAGS) -ffreestanding -fbuiltin -Wall -Wextra
+CFLAGS:=$(CFLAGS)-std=gnu99 -ffreestanding -fbuiltin -Wall -Wextra
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib
 
 # Import options
 include kerix.config
 
-# Setting archdir
-ARCHDIR := arch/$(ARCH)
-
 # Directories for compilation
 INCLUDEDIR := include
-SUBDIRS    := libk init kernel $(ARCHDIR)
-
-# Import arch options
-include $(ARCHDIR)/make.config
+SUBDIRS    := libk boot kernel
 
 # Sources
 SRC_FILES := $(shell find $(SUBDIRS) -name "*.c" -or -name "*.S")
@@ -42,23 +35,30 @@ OBJ_LIST = $(shell FILES="$(SRC_FILES)"; \
 .PHONY: all clean
 
 # Build Kerix
-all: $(OBJ_LIST) $(ARCHDIR)/setup.ld
-	@ echo "Linking the kernel"
-	ld $(LDFLAGS) -T $(ARCHDIR)/setup.ld -o $(OUTPUT) $(OBJ_LIST)
-	@ echo "Kerix builded at $(OUTPUT)"
+all:
+	@ printf "\e[0;35mNow building Kerix - ${NAME} (${VERSION}.${SUBVERSION}.${PATCHLEVEL})\e[m\n\n"
+	@ $(MAKE) $(OUTPUT) || { printf "\n\e[0;31mBuild failed\e[m\n"; exit 1; }
+	@ printf "\n\e[0;32mKerix builded at $(OUTPUT)\e[m\n"
+
+$(OUTPUT): $(OBJ_LIST) setup.ld
+	@ printf "\n\e[0;33mLinking the kernel\n\e[0;36m"
+	ld $(LDFLAGS) -T setup.ld -o $(OUTPUT) $(OBJ_LIST)
 
 %.o: %.c
-	@ echo "Compile $< => $@"
-	@ $(CC) -c $< -o $@ $(CFLAGS) -I$(INCLUDEDIR) $(LIBS)
+	@ printf "\e[0;33mCompile $< => $@\e[0;36m\n"
+	$(CC) -c $< -o $@ $(CFLAGS) -I$(INCLUDEDIR) $(LIBS)
+	@ printf "\e[m"
 
 %.o: %.S
-	@ echo "Compile $< => $@"
-	@ $(CC) -c $< -o $@ $(CFLAGS) -I$(INCLUDEDIR) $(LIBS)
+	@ printf "\e[0;33mCompile $< => $@\e[0;36m\n"
+	$(CC) -c $< -o $@ $(CFLAGS) -I$(INCLUDEDIR) $(LIBS)
+	@ printf "\e[m"
 
 # Clean object file
 clean:
-	@ echo "Cleaning $(CURDIR)/$(DIR)"
-	@ - rm -f $(shell find $(CURDIR)/$(DIR) -name "*.o" -or -name "*.a")
+	@ printf "\e[0;33mCleaning $(CURDIR)/$(DIR)\e[0;36m\n"
+	-rm -f $(shell find $(CURDIR)/$(DIR) -name "*.o" -or -name "*.a")
+	@ printf "\e[m\n"
 
 
 # Rebuild kerix
@@ -68,16 +68,14 @@ rebuild:
 
 # Rules to work with QEMU
 qemu-start:
-	qemu-system-$(ARCH) -kernel $(OUTPUT) $(QEMU_FLAGS)
-
-qemu-start-with-gdb-server:
-	qemu-system-$(ARCH) -kernel $(OUTPUT) $(QEMU_FLAGS) -s -S
+	$(QEMU) -kernel $(OUTPUT) $(QEMU_FLAGS) -pidfile .qemu-pid
 
 gdb-connect-qemu:
 	objcopy --only-keep-debug $(OUTPUT) /tmp/kerix.debug
-	- gdb -s /tmp/kerix.debug -ex "target remote localhost:1234" ; \
+	- gdb -s /tmp/kerix.debug -ex "target remote $(QEMU_ADDRESS):$(QEMU_PORT)" ; \
 	rm -f /tmp/kerix.debug ; \
-	killall qemu-system-$(ARCH)
+	make kill-qemu
 
 kill-qemu:
-	killall qemu-system-$(ARCH)
+	- kill $(shell cat .qemu-pid)
+	- rm -f .qemu-pid
