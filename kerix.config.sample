@@ -1,4 +1,10 @@
-ARCH = i386
-DEBUG = 1
-OUTPUT = $(CURDIR)/kerix-$(VERSION).$(SUBVERSION).$(PATCHLEVEL)
-QEMU_FLAGS = -curses
+OUTPUT=$(CURDIR)/kerix-$(VERSION).$(SUBVERSION).$(PATCHLEVEL)
+
+CFLAGS:=$(CFLAGS) -fvar-tracking -fvar-tracking-assignments -g -m32
+LDFLAGS:=$(LDFLAGS) -m elf_i386
+
+QEMU=qemu-system-i386
+QEMU_FLAGS=-curses
+QEMU_ADDRESS=localhost
+QEMU_PORT=1234
+QEMU_PID_FILE=qemu.pid
