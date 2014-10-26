@@ -1,4 +1,4 @@
-.data
+.section .data
   .set ALIGN,    1<<0
   .set MEMINFO,  1<<1
   .set FLAGS,    ALIGN | MEMINFO
@@ -18,23 +18,15 @@
     .skip 16384
   stack_top:
 
-
 .section .text
   .global _start
   .type _start, @function
 
   _start:
-    movl $stack_top, %esp
     cli
-
-    # Architecture dependent function
-    call init_kernel
-
-    # Common function
-    call start_kernel
-
+    push %ebx
+    call kernel_main
     hlt
 
 .hang_up:
   jmp .hang_up
-  
