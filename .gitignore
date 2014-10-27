@@ -6,5 +6,5 @@ kerix-*.*.*
 # Configuration file
 kerix.config
 
-qemu.pid
+.qemu.pid
 kerix.debug

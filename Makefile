@@ -68,7 +68,7 @@ rebuild:
 
 # Rules to work with QEMU
 qemu-start:
-	$(QEMU) -kernel $(OUTPUT) $(QEMU_FLAGS) -pidfile .qemu-pid
+	$(QEMU) -kernel $(OUTPUT) $(QEMU_FLAGS) -pidfile $(QEMU_PID_FILE)
 
 gdb-connect-qemu:
 	objcopy --only-keep-debug $(OUTPUT) /tmp/kerix.debug
@@ -77,5 +77,5 @@ gdb-connect-qemu:
 	make kill-qemu
 
 kill-qemu:
-	- kill $(shell cat .qemu-pid)
-	- rm -f .qemu-pid
+	- kill $(shell cat $(QEMU_PID_FILE))
+	- rm -f $(QEMU_PID_FILE)

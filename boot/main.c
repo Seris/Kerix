@@ -3,5 +3,5 @@
 
 void kernel_main (void) {
   early_console_init();
-  current_tty->write("Hello World!\nI'm Kerix :)");
+  current_tty->write("Kerix - Early console ready\n");
 }

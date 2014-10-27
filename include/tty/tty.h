@@ -7,7 +7,6 @@ typedef struct {
   char *name;
   size_t (*write)(char*);
   size_t (*read)(char*, size_t);
-  void   (*clean)(void);
 } tty_t;
 
 tty_t* current_tty;

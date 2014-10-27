@@ -25,11 +25,11 @@ enum early_console_color {
 
 
 char* vga_buffer = (char*) 0xB8000;
-unsigned int line_size    = 80;
-unsigned int lines_number = 25;
+uint32_t line_size    = 80;
+uint32_t lines_number = 25;
 
-unsigned int current_line;
-unsigned int current_offset;
+uint32_t current_line;
+uint32_t current_offset;
 
 uint16_t console_font_color = EARLY_CONSOLE_COLOR_WHITE;
 uint16_t console_background = EARLY_CONSOLE_COLOR_BLACK;
@@ -41,11 +41,11 @@ void early_console_init (void){
 }
 
 size_t early_console_write(char* str){
-  unsigned int i;
+  size_t i;
   for(i = 0; str[i] != 0; i++){
     switch (str[i]){
       case '\n':
-        next_line();
+        early_console_new_line();
         break;
 
       case '\e':
@@ -60,29 +60,44 @@ size_t early_console_write(char* str){
   return i;
 }
 
+void early_console_mv_line(uint32_t src, uint32_t dest){
+  uint32_t src_pos = src * line_size * 2;
+
+  uint32_t j = 0;
+  for(uint32_t i = 0; i < line_size * 2; i += 2){
+    early_console_put_chat_at(vga_buffer[src_pos + i], dest, j);
+    early_console_put_chat_at(' ', src, j++);
+  }
+}
+
+void early_console_new_line(void){
+  current_offset = 0;
+  if(++current_line == lines_number){
+    current_line--;
+    for(uint32_t l = 1; l < lines_number; l++){
+      early_console_mv_line(l, l - 1);
+    }
+  }
+}
+
 void early_console_clean(void){
-  size_t s = line_size * lines_number * 2;
-  do {
-    vga_buffer[--s] = 0;
-  } while(s > 0);
+  current_line = 0;
+  current_offset  = 0;
+  for(size_t i = 0; i < line_size * lines_number; i++){
+    early_console_push_char(' ');
+  }
   current_line = 0;
   current_offset  = 0;
 }
 
-/**
- * New line
- */
-void next_line(void){
-  current_offset = 0;
-  if(++current_line == lines_number){
-    current_line--;
-  }
+void early_console_push_char(char c){
+  early_console_put_chat_at(c, current_line, current_offset);
+  if(++current_offset == line_size)
+    early_console_new_line();
 }
 
-void early_console_push_char(char c){
-  unsigned int cursor = (current_line * line_size + current_offset) * 2;
+void early_console_put_chat_at(char c, uint32_t row, uint32_t column){
+  uint32_t cursor = (row * line_size + column) * 2;
   vga_buffer[cursor] = c;
   vga_buffer[++cursor] = console_font_color | console_background << 4;
-  if(++current_offset == line_size)
-    next_line();
 }
