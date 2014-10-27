@@ -7,4 +7,4 @@ QEMU=qemu-system-i386
 QEMU_FLAGS=-curses
 QEMU_ADDRESS=localhost
 QEMU_PORT=1234
-QEMU_PID_FILE=qemu.pid
+QEMU_PID_FILE=.qemu.pid
