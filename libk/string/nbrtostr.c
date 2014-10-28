@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-size_t ulongtostr(uint32_t n, char* buf, short base,){
+size_t ulongtostr(uint32_t n, char* buf, short base){
   char* digits = "0123456789abcdefghijklmnopqrstuvwxyz";
   char tmp_str[128];
 
