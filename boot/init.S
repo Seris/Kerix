@@ -23,8 +23,12 @@
   .type _start, @function
 
   _start:
+    # Clear Interrupt
     cli
-    push %ebx
+    
+    # Temporary Stack
+    movl $stack_top, %esp
+
     call kernel_main
     hlt
 
