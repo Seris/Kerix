@@ -14,9 +14,8 @@ export LC_COLLATE LC_NUMERIC
 MAKEFLAGS += --no-print-directory
 
 # Flags
-CFLAGS:=$(CFLAGS)-std=gnu99 -ffreestanding -fbuiltin -Wall -Wextra
-LDFLAGS:=$(LDFLAGS)
-LIBS:=$(LIBS) -nostdlib
+CFLAGS:=$(CFLAGS)-std=gnu99 -ffreestanding -O2 -Wall -Wextra -nostdlib -lgcc 
+
 
 # Import options
 include kerix.config
@@ -28,7 +27,7 @@ SUBDIRS    := libk boot kernel
 # Sources
 SRC_FILES := $(shell find $(SUBDIRS) -name "*.c" -or -name "*.S")
 
-# Future object files
+# Future object files list
 OBJ_LIST = $(shell FILES="$(SRC_FILES)"; \
 	for file in $$FILES; do echo $${file%.*}.o; done;)
 
@@ -42,22 +41,22 @@ all:
 
 $(OUTPUT): $(OBJ_LIST) setup.ld
 	@ printf "\n\e[0;33mLinking the kernel\n\e[0;36m"
-	ld $(LDFLAGS) -T setup.ld -o $(OUTPUT) $(OBJ_LIST)
+	$(CC) $(CFLAGS) $(LDFLAGS) -T setup.ld -o $(OUTPUT) $(OBJ_LIST)
 
 %.o: %.c
 	@ printf "\e[0;33mCompile $< => $@\e[0;36m\n"
-	$(CC) -c $< -o $@ $(CFLAGS) -I$(INCLUDEDIR) $(LIBS)
+	$(CC) -c $< -o $@ $(CFLAGS) -I$(INCLUDEDIR)
 	@ printf "\e[m"
 
 %.o: %.S
 	@ printf "\e[0;33mCompile $< => $@\e[0;36m\n"
-	$(CC) -c $< -o $@ $(CFLAGS) -I$(INCLUDEDIR) $(LIBS)
+	$(CC) -c $< -o $@ $(CFLAGS) -I$(INCLUDEDIR)
 	@ printf "\e[m"
 
 # Clean object file
 clean:
 	@ printf "\e[0;33mCleaning $(CURDIR)/$(DIR)\e[0;36m\n"
-	-rm -f $(shell find $(CURDIR)/$(DIR) -name "*.o" -or -name "*.a")
+	- rm -f $(shell find $(CURDIR)/$(DIR) -name "*.o" -or -name "*.a")
 	@ printf "\e[m\n"
 
 
@@ -70,11 +69,14 @@ rebuild:
 qemu-start:
 	$(QEMU) -kernel $(OUTPUT) $(QEMU_FLAGS) -pidfile $(QEMU_PID_FILE)
 
-gdb-connect-qemu:
-	objcopy --only-keep-debug $(OUTPUT) /tmp/kerix.debug
-	- gdb -s /tmp/kerix.debug -ex "target remote $(QEMU_ADDRESS):$(QEMU_PORT)" ; \
+connect-gdb:
+	- $(GDB) -s $(DEBUG_FILE) -ex "target remote $(QEMU_ADDRESS):$(QEMU_PORT)" ; \
 	rm -f /tmp/kerix.debug ; \
 	make kill-qemu
+
+gen-debug-file:
+	objcopy --only-keep-debug $(OUTPUT) $(DEBUG_FILE)
+	objcopy --strip-debug $(OUTPUT)
 
 kill-qemu:
 	- kill $(shell cat $(QEMU_PID_FILE))

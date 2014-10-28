@@ -1,10 +1,15 @@
+CC=gcc
+LD=ld
+GDB=gdb
+
 OUTPUT=$(CURDIR)/kerix-$(VERSION).$(SUBVERSION).$(PATCHLEVEL)
 
-CFLAGS:=$(CFLAGS) -fvar-tracking -fvar-tracking-assignments -g -m32
-LDFLAGS:=$(LDFLAGS) -m elf_i386
+CFLAGS:=$(CFLAGS) -g
+LDFLAGS:=$(LDFLAGS)
 
 QEMU=qemu-system-i386
 QEMU_FLAGS=-curses
 QEMU_ADDRESS=localhost
 QEMU_PORT=1234
 QEMU_PID_FILE=.qemu.pid
+DEBUG_FILE=/tmp/kerix.debug
