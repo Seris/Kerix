@@ -13,24 +13,26 @@
   .long CHECKSUM
 
 
-.section .bootstrap_stack, "aw", @nobits
-  stack_bottom:
-    .skip 16384
-  stack_top:
-
 .section .text
   .global _start
-  .type _start, @function
+  .type   _start, @function
 
   _start:
-    # Clear Interrupt
+    # Setting up stack
+    mov $stack_start, %esp
+    xor %ebp, %ebp
+    push %ebp
     cli
-    
-    # Temporary Stack
-    movl $stack_top, %esp
 
+    push %ebx
+    push %eax
     call kernel_main
-    hlt
 
-.hang_up:
-  jmp .hang_up
+    hlt
+    .hang_up: jmp .hang_up
+
+
+.section .bss
+  stack_end:
+    .zero 16384
+  stack_start:

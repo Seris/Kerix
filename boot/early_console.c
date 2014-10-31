@@ -36,7 +36,9 @@ uint16_t console_background = EARLY_CONSOLE_COLOR_BLACK;
 
 void early_console_init (void){
   early_console_tty.write = &early_console_write;
+  early_console_tty.tabsize = 4;
   current_tty = &early_console_tty;
+
   early_console_clean();
 }
 
@@ -48,7 +50,9 @@ size_t early_console_write(char* str){
         early_console_new_line();
         break;
 
-      case '\e':
+      case '\t':
+        for(size_t j = 0; j < early_console_tty.tabsize; j++)
+          early_console_push_char(' ');
         break;
 
       default:

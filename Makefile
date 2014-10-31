@@ -14,8 +14,7 @@ export LC_COLLATE LC_NUMERIC
 MAKEFLAGS += --no-print-directory
 
 # Flags
-CFLAGS:=$(CFLAGS)-std=gnu99 -ffreestanding -O2 -Wall -Wextra -nostdlib -lgcc 
-
+CFLAGS:=$(CFLAGS)-std=gnu99 -ffreestanding -Wall -Wextra -nostdlib -lgcc
 
 # Import options
 include kerix.config
@@ -35,7 +34,9 @@ OBJ_LIST = $(shell FILES="$(SRC_FILES)"; \
 
 # Build Kerix
 all:
-	@ printf "\e[0;35mNow building Kerix - ${NAME} (${VERSION}.${SUBVERSION}.${PATCHLEVEL})\e[m\n\n"
+	@ printf '\e[0;35m---------------------\n'
+	@ printf "Now building Kerix - ${NAME} (${VERSION}.${SUBVERSION}.${PATCHLEVEL})\n"
+	@ printf '---------------------\e[m\n'
 	@ $(MAKE) $(OUTPUT) || { printf "\n\e[0;31mBuild failed\e[m\n"; exit 1; }
 	@ printf "\n\e[0;32mKerix builded at $(OUTPUT)\e[m\n"
 
@@ -66,12 +67,14 @@ rebuild:
 
 
 # Rules to work with QEMU
-qemu-start:
-	$(QEMU) -kernel $(OUTPUT) $(QEMU_FLAGS) -pidfile $(QEMU_PID_FILE)
+start-qemu:
+	$(QEMU) -kernel $(OUTPUT) $(QEMU_ARGS)
+
+start-gdb-qemu:
+	$(QEMU) -kernel $(OUTPUT) $(QEMU_DEBUG_ARGS)
 
 connect-gdb:
 	- $(GDB) -s $(DEBUG_FILE) -ex "target remote $(QEMU_ADDRESS):$(QEMU_PORT)" ; \
-	rm -f /tmp/kerix.debug ; \
 	make kill-qemu
 
 gen-debug-file:

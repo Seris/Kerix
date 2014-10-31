@@ -24,7 +24,7 @@ Minimalist kernel for i386 (x86) system
 * Connect GDB to qemu
 ```
 # In kerix.config
-QEMU_FLAGS=-s -S
+QEMU_ARGS=-s -S
 
 make start-qemu
 make gdb-connect-qemu
