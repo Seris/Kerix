@@ -18,21 +18,28 @@
   .type   _start, @function
 
   _start:
+    cli
+    
     # Setting up stack
     mov $stack_start, %esp
     xor %ebp, %ebp
     push %ebp
-    cli
 
     push %ebx
     push %eax
     call kernel_main
 
+
+  .global halt_system
+  .type   halt_system, @function
+  
+  halt_system:
     hlt
-    .hang_up: jmp .hang_up
+  hang_up:
+    jmp hang_up
 
 
-.section .bss
+.section .bootstrap_stack
   stack_end:
-    .zero 16384
+    .space 4096 * 4
   stack_start:

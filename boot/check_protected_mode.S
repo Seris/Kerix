@@ -6,11 +6,9 @@
     pushl %ebp
     movl %esp, %ebp
 
-    pushl %eax
     movl %cr0, %eax
     andl $1, %eax # ax=1 (protected mode), ax=0 (not in protected mode)
 
-    movl %ebp, %esp
-    popl %ebp
+    mov %ebp, %esp
+    pop %ebp
     ret
-    

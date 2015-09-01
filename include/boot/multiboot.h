@@ -53,9 +53,8 @@ typedef struct {
   uint32_t length_low;
   uint32_t length_high;
   uint32_t type;
-} multiboot_memory_map;
+} multiboot_mmap;
 
 void check_multiboot(int);
-short check_a20line(void);
 
 #endif

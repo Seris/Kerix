@@ -8,8 +8,9 @@ CFLAGS:=$(CFLAGS) -g
 LDFLAGS:=$(LDFLAGS)
 
 QEMU=qemu-system-i386
-QEMU_ARGS=-curses
-QEMU_ADDRESS=localhost
-QEMU_PORT=1234
 QEMU_PID_FILE=.qemu.pid
-DEBUG_FILE=/tmp/kerix.debug
+QEMU_GDB_PORT=1234
+QEMU_DEBUG_FILE=/tmp/kerix.debug
+
+#QEMU_ARSG=
+#QEMU_DEBUG_ARGS=

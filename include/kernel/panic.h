@@ -6,6 +6,6 @@
 #define STACK_TRACE_FRAMES 10
 
 void panic(const char* str, ...);
-void display_stack_trace(unsigned int maxFrames);
+void display_stack_trace(int maxFrames);
 
 #endif

@@ -1,7 +1,7 @@
 # Kerix Makefile
 VERSION    := 0
-SUBVERSION := 0
-PATCHLEVEL := 1
+SUBVERSION := 1
+PATCHLEVEL := 0
 NAME       := Rainbow Vampire Kitten
 export VERSION SUBVERSION PATCHLEVEL NAME
 
@@ -14,10 +14,14 @@ export LC_COLLATE LC_NUMERIC
 MAKEFLAGS += --no-print-directory
 
 # Flags
-CFLAGS:=$(CFLAGS)-std=gnu99 -ffreestanding -Wall -Wextra -nostdlib -lgcc
+CFLAGS:=$(CFLAGS) -std=gnu99 -ffreestanding -Wall -Wextra -nostdlib
 
 # Import options
 include kerix.config
+
+# QEMU Arguments
+QEMU_ARGS       := -pidfile $(QEMU_PID_FILE) $(QEMU_ARGS)
+QEMU_DEBUG_ARGS += $(QEMU_ARGS) -S -gdb tcp::$(QEMU_GDB_PORT)
 
 # Directories for compilation
 INCLUDEDIR := include
@@ -44,6 +48,9 @@ $(OUTPUT): $(OBJ_LIST) setup.ld
 	@ printf "\n\e[0;33mLinking the kernel\n\e[0;36m"
 	$(CC) $(CFLAGS) $(LDFLAGS) -T setup.ld -o $(OUTPUT) $(OBJ_LIST)
 
+$(DEBUG_FILE):
+	make debug-file
+
 %.o: %.c
 	@ printf "\e[0;33mCompile $< => $@\e[0;36m\n"
 	$(CC) -c $< -o $@ $(CFLAGS) -I$(INCLUDEDIR)
@@ -66,18 +73,18 @@ rebuild:
 	@ $(MAKE) clean all
 
 
-# Rules to work with QEMU
-start-qemu:
+# Rules to handle QEMU launch
+qemu-start:
 	$(QEMU) -kernel $(OUTPUT) $(QEMU_ARGS)
 
-start-gdb-qemu:
+gdb-qemu-start: $(DEBUG_FILE)
 	$(QEMU) -kernel $(OUTPUT) $(QEMU_DEBUG_ARGS)
 
-connect-gdb:
-	- $(GDB) -s $(DEBUG_FILE) -ex "target remote $(QEMU_ADDRESS):$(QEMU_PORT)" ; \
+connect-gdb: $(DEBUG_FILE)
+	- $(GDB) -s $(DEBUG_FILE) -ex "target remote localhost:$(QEMU_GDB_PORT)" ; \
 	make kill-qemu
 
-gen-debug-file:
+debug-file:
 	objcopy --only-keep-debug $(OUTPUT) $(DEBUG_FILE)
 	objcopy --strip-debug $(OUTPUT)
 

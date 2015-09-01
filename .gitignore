@@ -8,3 +8,5 @@ kerix.config
 
 .qemu.pid
 kerix.debug
+
+disk

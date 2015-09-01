@@ -17,7 +17,7 @@ size_t ulongtostr(uint32_t n, char* buf, short base){
     buf[i++] = tmp_str[--j];
   } while(j > 0);
 
-  buf[i+1] = '\0';
+  buf[i] = '\0';
 
   return i;
 }

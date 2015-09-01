@@ -9,37 +9,36 @@ size_t parse_kernel_soh(const char* fmt, char buf[], size_t* n){
     *n = 2;
     switch(*(++fmt)){
       case '0':
-        memcpy((void*) buf, "<panic> : ", 10);
-        return 10;
+        memcpy((void*) buf, "[panic] ", 8);
+        return 8;
 
       case '1':
-        memcpy((void*) buf, "<alert> : ", 10);
-        return 10;
+        memcpy((void*) buf, "[alert] ", 8);
+        return 8;
 
       case '2':
-        memcpy((void*) buf, "<crit> : ", 9);
-        return 9;
+        memcpy((void*) buf, "[crit] ", 7);
+        return 7;
 
       case '3':
-        memcpy((void*) buf, "<error> : ", 10);
-        return 10;
+        memcpy((void*) buf, "[error] ", 8);
+        return 8;
 
       case '4':
-        memcpy((void*) buf, "<warning> : ", 10);
+        memcpy((void*) buf, "[warning] ", 10);
         return 10;
 
       case '5':
-        memcpy((void*) buf, "<notice> : ", 9);
-        return 9;
+        memcpy((void*) buf, "[notice] ", 7);
+        return 7;
 
-      case 'd':
       case '6':
-        memcpy((void*) buf, "<info> : ", 9);
-        return 9;
+        memcpy((void*) buf, "[info] ", 7);
+        return 7;
 
       case '7':
-        memcpy((void*) buf, "<debug> : ", 10);
-        return 10;
+        memcpy((void*) buf, "[debug] ", 8);
+        return 8;
     }
   }
 
@@ -79,8 +78,6 @@ size_t vsprintk(char *buf, const char *fmt, va_list args){
         str = (char*) tmp;
         break;
 
-      case 'x':
-        base = 16;
       case 'u':
         uintostr(va_arg(args, unsigned int), tmp, base);
         str = (char*) tmp;
@@ -92,7 +89,9 @@ size_t vsprintk(char *buf, const char *fmt, va_list args){
         break;
 
       case 'p':
-        ulongtostr((long) va_arg(args, void*), tmp, 16);
+        tmp[0] = '0';
+        tmp[1] = 'x';
+        ulongtostr((long) va_arg(args, void*), tmp + 2, 16);
         str = (char*) tmp;
         break;
 
@@ -100,9 +99,9 @@ size_t vsprintk(char *buf, const char *fmt, va_list args){
         str = va_arg(args, char*);
         break;
 
-      case 'L':
+      case 'x':
         base = 16;
-      case 'l':
+      case 'X':
         ulongtostr(va_arg(args, long), tmp, base);
         str = tmp;
         break;
